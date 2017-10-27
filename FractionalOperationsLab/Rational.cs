@@ -19,21 +19,21 @@ namespace FractionalOperationsLab
         public int Fraction => Numerator % Denominator;
 
         /// Возвращает наибольший общий делитель
-        private static int GetGreatestCommonDivisor(int a, int b)
+        private static int GetGreatestCommonDivisor(int first, int second)
         {
-            while (b != 0)
+            while (second != 0)
             {
-                var temp = b;
-                b = a % b;
-                a = temp;
+                var temp = second;
+                second = first % second;
+                first = temp;
             }
-            return a;
+            return first;
         }
 
         /// Возвращает наименьшее общее кратное
-        private static int GetLeastCommonMultiple(int a, int b)
+        private static int GetLeastCommonMultiple(int first, int second)
         {
-            return a * b / GetGreatestCommonDivisor(a, b);
+            return first * second / GetGreatestCommonDivisor(first, second);
         }
 
         private Rational Invert()
@@ -121,7 +121,7 @@ namespace FractionalOperationsLab
         /// false если строка не соответствует формату
         public static bool TryParse(string input, out Rational result)
         {
-            result = new Rational {Denominator = 0, Numerator = 0};
+            result = (Rational) 0;
             if (input.Contains('.') && !input.Contains(':'))
             {
                 return false;
@@ -186,6 +186,85 @@ namespace FractionalOperationsLab
             var greatestCommonDivisor = GetGreatestCommonDivisor(Numerator, Denominator);
             Numerator /= greatestCommonDivisor;
             Denominator /= greatestCommonDivisor;
+        }
+
+        // Операторы
+        public static Rational operator +(Rational first, Rational second)
+        {
+            return first.Add(second);
+        }
+
+        public static Rational operator +(Rational first, int second)
+        {
+            var secondRational = (Rational) second;
+            return first + secondRational;
+        }
+
+        public static Rational operator +(int first, Rational second)
+        {
+            var firstRational = (Rational) first;
+            return firstRational + second;
+        }
+
+        public static Rational operator -(Rational first, Rational second)
+        {
+            return first.Add(second.Negate());
+        }
+
+        public static Rational operator -(Rational first, int second)
+        {
+            var secondRational = (Rational) second;
+            return first - secondRational;
+        }
+
+        public static Rational operator -(int first, Rational second)
+        {
+            var firstRational = (Rational) first;
+            return firstRational - second;
+        }
+
+        public static Rational operator *(Rational first, Rational second)
+        {
+            return first.Multiply(second);
+        }
+
+        public static Rational operator *(Rational first, int second)
+        {
+            var secondRational = (Rational) second;
+            return first * secondRational;
+        }
+
+        public static Rational operator *(int first, Rational second)
+        {
+            var firstRational = (Rational) first;
+            return firstRational * second;
+        }
+
+        public static Rational operator /(Rational first, Rational second)
+        {
+            return first.DivideBy(second);
+        }
+
+        public static Rational operator /(Rational first, int second)
+        {
+            var secondRational = (Rational) second;
+            return first / secondRational;
+        }
+
+        public static Rational operator /(int first, Rational second)
+        {
+            var firstRational = (Rational) first;
+            return firstRational / second;
+        }
+
+        public static explicit operator int(Rational rational)
+        {
+            return rational.Base;
+        }
+
+        public static explicit operator Rational(int integer)
+        {
+            return new Rational {Denominator = 1, Numerator = integer};
         }
     }
 }
