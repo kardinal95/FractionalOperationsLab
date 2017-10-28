@@ -22,7 +22,7 @@ namespace FractionalOperationsLab.Commands
                 {
                     if (second.Numerator != 0)
                     {
-                        Console.WriteLine("Результат деления: {0}", first/second);
+                        Console.WriteLine("Результат деления: {0}", first / second);
                         return;
                     }
                     Console.WriteLine("Ошибка - деление на ноль невозможно!");

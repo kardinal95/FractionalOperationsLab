@@ -52,7 +52,7 @@ namespace FractionalOperationsLab
         }
 
         /// <summary>
-        /// Приводит текущую дробь сокращая числитель и знаменатель на общий делитель
+        ///     Приводит текущую дробь сокращая числитель и знаменатель на общий делитель
         /// </summary>
         private void Even()
         {
@@ -169,7 +169,7 @@ namespace FractionalOperationsLab
         /// false если строка не соответствует формату
         public static bool TryParse(string input, out Rational result)
         {
-            result = (Rational)0;
+            result = (Rational) 0;
             const string pattern = @"^[-]?\d+([.]?\d+[:]\d+|[:]\d+)?$";
             var regex = new Regex(pattern, RegexOptions.Compiled);
 

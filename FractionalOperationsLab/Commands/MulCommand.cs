@@ -20,7 +20,7 @@ namespace FractionalOperationsLab.Commands
                 if (Rational.TryParse(arguments[0], out var first) &&
                     Rational.TryParse(arguments[1], out var second))
                 {
-                    Console.WriteLine("Результат умножения: {0}", first*second);
+                    Console.WriteLine("Результат умножения: {0}", first * second);
                     return;
                 }
                 Console.WriteLine("Ошибка - некорректный ввод чисел!");
