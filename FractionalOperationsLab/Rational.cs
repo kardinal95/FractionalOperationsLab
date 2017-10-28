@@ -1,67 +1,86 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace FractionalOperationsLab
 {
+    /// <summary>
+    ///     Структура для хранения рациональных дробей.
+    ///     Общий вид: N:D, N - числитель дроби, D - знаменатель дроби
+    ///     В строковом представлении может иметь вид Z.N:D, где Z - выделенная целая часть
+    /// </summary>
     public struct Rational
     {
-        /// Числитель дроби
+        /// <summary>
+        ///     Числитель дроби
+        /// </summary>
         public int Numerator { get; set; }
 
-        /// Знаменатель дроби
+        /// <summary>
+        ///     Знаменатель дроби
+        /// </summary>
         public int Denominator { get; set; }
 
-        /// Целая часть числа Z.N:D, Z. получается делением числителя на знаменатель и
-        /// отбрасыванием остатка
+        /// <summary>
+        ///     Целая часть Z числа Z.N:D
+        ///     Получается делением числителя на знаменатель без остатка
+        /// </summary>
         public int Base => Numerator / Denominator;
 
-        /// Дробная часть числа Z.N:D, N:D
+        /// <summary>
+        ///     Дробная часть N числа Z.N:D
+        ///     Получается взятием остатка от деления числителя на знаменатель
+        /// </summary>
         public int Fraction => Numerator % Denominator;
 
-        /// Возвращает наибольший общий делитель
-        private static int GetGreatestCommonDivisor(int first, int second)
+        /// <summary>
+        ///     Возвращает дробь сравнимую по модулю с текущей, но с противоположным знаком
+        /// </summary>
+        /// <returns>Рациональная дробь с противоположным знаком</returns>
+        public Rational Negate()
         {
-            while (second != 0)
-            {
-                var temp = second;
-                second = first % second;
-                first = temp;
-            }
-            return first;
+            return new Rational {Denominator = Denominator, Numerator = -Numerator};
         }
 
-        /// Возвращает наименьшее общее кратное
-        private static int GetLeastCommonMultiple(int first, int second)
-        {
-            return first * second / GetGreatestCommonDivisor(first, second);
-        }
-
+        /// <summary>
+        ///     Возвращает дробь обратную к текущей (полученную сменой числителя и знаменателя)
+        /// </summary>
+        /// <returns>Рациональная дробь обратная текущей</returns>
         private Rational Invert()
         {
             return new Rational {Denominator = Numerator, Numerator = Denominator};
         }
 
-        /// Операция сложения, возвращает новый объект - рациональное число,
-        /// которое является суммой чисел c и this
-        public Rational Add(Rational c)
+        /// <summary>
+        /// Приводит текущую дробь сокращая числитель и знаменатель на общий делитель
+        /// </summary>
+        private void Even()
         {
-            var denominator = GetLeastCommonMultiple(Denominator, c.Denominator);
-            var numerator = c.Numerator * denominator / c.Denominator +
+            var greatestCommonDivisor = GetGreatestCommonDivisor(Numerator, Denominator);
+            Numerator /= greatestCommonDivisor;
+            Denominator /= greatestCommonDivisor;
+        }
+
+        /// <summary>
+        ///     Возвращает сумму текущей рациональной дроби и рациональной дроби x
+        /// </summary>
+        /// <param name="x">Дробь прибавляемая к текущей</param>
+        /// <returns>Рациональная дробь - результат сложения</returns>
+        public Rational Add(Rational x)
+        {
+            var denominator = GetLeastCommonMultiple(Denominator, x.Denominator);
+            var numerator = x.Numerator * denominator / x.Denominator +
                             Numerator * denominator / Denominator;
             var result = new Rational {Denominator = denominator, Numerator = numerator};
             result.Even();
             return result;
         }
 
-        /// Операция смены знака, возвращает новый объект - рациональное число,
-        /// которое являтеся разностью числа 0 и this
-        public Rational Negate()
-        {
-            return new Rational {Denominator = Denominator, Numerator = -Numerator};
-        }
-
-        /// Операция умножения, возвращает новый объект - рациональное число,
-        /// которое является результатом умножения чисел x и this
+        /// <summary>
+        ///     Возвращает произведение текущей рациональной дроби на рациональную дробь x
+        /// </summary>
+        /// <param name="x">Дробь умножаемая на текущую</param>
+        /// <returns>Рациональная дробь - результат умножения</returns>
         public Rational Multiply(Rational x)
         {
             var result = new Rational
@@ -73,21 +92,51 @@ namespace FractionalOperationsLab
             return result;
         }
 
-        /// Операция деления, возвращает новый объект - рациональное число,
-        /// которое является результатом деления this на x
+        /// <summary>
+        ///     Возвращает частное от деления текущей рациональной дроби на рациональную дробь x
+        /// </summary>
+        /// <param name="x">Дробь на которую делится текущая</param>
+        /// <returns>Рациональная дробь - результат деления</returns>
         public Rational DivideBy(Rational x)
         {
             return Multiply(x.Invert());
         }
 
-        /// Вовзращает строковое представление числа в виде Z.N:D, где
-        /// Z — целая часть N и D — целые числа, числитель и знаменатель, N &lt; D
-        /// '.'— символ, отличающий целую часть от дробной,
-        /// ':' — символ, обозначающий знак деления
-        /// если числитель нацело делится на знаменатель, то
-        /// строковое представление не отличается от целого числа
-        /// (исчезает точка и всё, что после точки)
-        /// Если Z = 0, опускается часть представления до точки включительно
+        /// <summary>
+        ///     Находит наибольший общий делитель двух рациональных дробей
+        /// </summary>
+        /// <param name="first">Одна рациональная дробь</param>
+        /// <param name="second">Другая рациональная дробь</param>
+        /// <returns>Целое число - наибольший общий делитель</returns>
+        private static int GetGreatestCommonDivisor(int first, int second)
+        {
+            while (second != 0)
+            {
+                var temp = second;
+                second = first % second;
+                first = temp;
+            }
+            return first;
+        }
+
+        /// <summary>
+        ///     Находит наименьшее общее кратное двух рациональных дробей
+        /// </summary>
+        /// <param name="first">Одна рациональная дробь</param>
+        /// <param name="second">Другая рациональная дробь</param>
+        /// <returns>Целое число - наименьшее общее кратное</returns>
+        private static int GetLeastCommonMultiple(int first, int second)
+        {
+            return first * second / GetGreatestCommonDivisor(first, second);
+        }
+
+        /// <summary>
+        ///     Воpdращает строковое представление дроби в подходящем виде
+        ///     Если возможно представления в виде целого числа - в виде Z
+        ///     Если числитель меньше знаменателя - в виде N:D, где : обозначает знак деления
+        ///     В противном случае в полной форме Z.N:D, где . отделяет целую часть
+        /// </summary>
+        /// <returns>Строковое представление дроби</returns>
         public override string ToString()
         {
             if (Numerator == 0)
@@ -96,7 +145,6 @@ namespace FractionalOperationsLab
             }
 
             var sign = Numerator < 0 ? "-" : "";
-
             if (Fraction == 0)
             {
                 return sign + Math.Abs(Base);
@@ -121,74 +169,24 @@ namespace FractionalOperationsLab
         /// false если строка не соответствует формату
         public static bool TryParse(string input, out Rational result)
         {
-            result = (Rational) 0;
-            if (input.Contains('.') && !input.Contains(':'))
+            result = (Rational)0;
+            const string pattern = @"^[-]?\d+([.]?\d+[:]\d+|[:]\d+)?$";
+            var regex = new Regex(pattern, RegexOptions.Compiled);
+
+            if (!regex.IsMatch(input))
             {
                 return false;
             }
-            var rawInput = input.Split(':', '.');
-            try
-            {
-                var sign = 1;
-                if (rawInput[0][0] == '-')
-                {
-                    sign = -1;
-                    rawInput[0] = rawInput[0].Substring(1);
-                }
-                switch (rawInput.Length)
-                {
-                    case 1:
-                        result.Denominator = 1;
-                        result.Numerator = Convert.ToInt32(rawInput[0]);
-                        result.Numerator *= sign;
-                        return true;
-                    case 2:
-                        if (rawInput[1][0] == '-')
-                        {
-                            return false;
-                        }
-                        result.Denominator = Convert.ToInt32(rawInput[1]);
-                        if (result.Denominator == 0)
-                        {
-                            return false;
-                        }
-                        result.Numerator = Convert.ToInt32(rawInput[0]);
-                        result.Numerator *= sign;
-                        return true;
-                    case 3:
-                        if (rawInput[1][0] == '-' || rawInput[2][0] == '-')
-                        {
-                            return false;
-                        }
-                        result.Denominator = Convert.ToInt32(rawInput[2]);
-                        if (result.Denominator == 0)
-                        {
-                            return false;
-                        }
-                        result.Numerator = Convert.ToInt32(rawInput[0]) * result.Denominator +
-                                           Convert.ToInt32(rawInput[1]);
-                        result.Numerator *= sign;
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-            catch (Exception e) when (e is FormatException || e is OverflowException)
-            {
-                return false;
-            }
+
+            // Здесь уже только целые числа
+            var nums = (from object token in Regex.Matches(input, @"\d+")
+                select Convert.ToInt32(token.ToString())).ToList();
+            result.Denominator = nums.Count > 1 ? nums[nums.Count - 1] : 1;
+            result.Numerator = nums.Count > 2 ? nums[0] * result.Denominator + nums[1] : nums[0];
+            result.Numerator *= Regex.IsMatch(input, @"[-]") ? -1 : 1;
+            return result.Denominator != 0; // Проверка на ноль в знаменателе
         }
 
-        /// Приведение дроби - сокращаем дробь на общие делители числителя
-        /// и знаменателя. Вызывается реализацией после каждой арифметической операции
-        private void Even()
-        {
-            var greatestCommonDivisor = GetGreatestCommonDivisor(Numerator, Denominator);
-            Numerator /= greatestCommonDivisor;
-            Denominator /= greatestCommonDivisor;
-        }
-
-        // Операторы
         public static Rational operator +(Rational first, Rational second)
         {
             return first.Add(second);
