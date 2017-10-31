@@ -9,8 +9,8 @@ namespace FractionalOperationsLab
     /// </summary>
     class Handler
     {
-        public Dictionary<string, ICommand> CommandMap => new Dictionary<string, ICommand>();
-        public List<ICommand> Commands => new List<ICommand>();
+        public Dictionary<string, ICommand> CommandMap { get; } = new Dictionary<string, ICommand>();
+        public List<ICommand> Commands { get; } = new List<ICommand>();
         public bool Running { get; set; } = true;
 
         /// <summary>

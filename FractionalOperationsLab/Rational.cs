@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -46,7 +47,7 @@ namespace FractionalOperationsLab
         ///     Возвращает дробь обратную к текущей (полученную сменой числителя и знаменателя)
         /// </summary>
         /// <returns>Рациональная дробь обратная текущей</returns>
-        private Rational Invert()
+        public Rational Invert()
         {
             return new Rational {Denominator = Numerator, Numerator = Denominator};
         }
@@ -54,7 +55,7 @@ namespace FractionalOperationsLab
         /// <summary>
         ///     Приводит текущую дробь сокращая числитель и знаменатель на общий делитель
         /// </summary>
-        private void Even()
+        public void Even()
         {
             var greatestCommonDivisor = GetGreatestCommonDivisor(Numerator, Denominator);
             Numerator /= greatestCommonDivisor;
@@ -103,10 +104,10 @@ namespace FractionalOperationsLab
         }
 
         /// <summary>
-        ///     Находит наибольший общий делитель двух рациональных дробей
+        ///     Находит наибольший общий делитель двух чисел
         /// </summary>
-        /// <param name="first">Одна рациональная дробь</param>
-        /// <param name="second">Другая рациональная дробь</param>
+        /// <param name="first">Первое число</param>
+        /// <param name="second">Второе число</param>
         /// <returns>Целое число - наибольший общий делитель</returns>
         private static int GetGreatestCommonDivisor(int first, int second)
         {
@@ -116,18 +117,18 @@ namespace FractionalOperationsLab
                 second = first % second;
                 first = temp;
             }
-            return first;
+            return Math.Abs(first);
         }
 
         /// <summary>
-        ///     Находит наименьшее общее кратное двух рациональных дробей
+        ///     Находит наименьшее общее кратное двух чисел
         /// </summary>
-        /// <param name="first">Одна рациональная дробь</param>
-        /// <param name="second">Другая рациональная дробь</param>
+        /// <param name="first">Первое число</param>
+        /// <param name="second">Второе число</param>
         /// <returns>Целое число - наименьшее общее кратное</returns>
         private static int GetLeastCommonMultiple(int first, int second)
         {
-            return first * second / GetGreatestCommonDivisor(first, second);
+            return Math.Abs(first * second / GetGreatestCommonDivisor(first, second));
         }
 
         /// <summary>
