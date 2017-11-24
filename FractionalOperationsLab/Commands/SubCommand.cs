@@ -1,35 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FractionalOperationsLab.Commands
 {
-    class SubCommand : ICommand
+    class SubCommand : CalcBaseCommand
     {
-        public string Name => "sub";
-        public string ShortDescription => "вычесть две дроби";
-        public string Description => "Вычитает две рациональные дроби и выводит результат.";
+        public override string Name => "sub";
+        public override string ShortDescription => "вычесть дроби";
+        public override string Description => "Вычитает рациональные дроби и выводит результат.";
 
-        public string Usage => "\'sub x y\', где x, y - рациональные дроби.\n" +
-                               "Рациональные дроби могут быть представлены как в виде числа (0, 23, -100), так и в специфическом виде.\n" +
-                               "Специфический вид подразумевает шаблон Z.N:D, где Z - целая часть (может отсутствовать), " +
-                               "N - числитель, D - знаменатель. Z, N, D - целые! Перед числом может стоять знак \"-\".";
+        public override string Usage => "\'sub x y ...\', где x, y, ... - рациональные дроби.\n" +
+                                        "Рациональные дроби могут быть представлены как в виде числа (0, 23, -100), так и в специфическом виде.\n" +
+                                        "Специфический вид подразумевает шаблон Z.N:D, где Z - целая часть (может отсутствовать), " +
+                                        "N - числитель, D - знаменатель. Z, N, D - целые! Перед числом может стоять знак \"-\".";
 
-        public void Execute(params string[] arguments)
+        protected override void Calculate(List<Rational> args)
         {
-            if (arguments.Length == 2)
-            {
-                if (Rational.TryParse(arguments[0], out var first) &&
-                    Rational.TryParse(arguments[1], out var second))
-                {
-                    Console.WriteLine("Результат вычитания: {0}", first - second);
-                    return;
-                }
-                Console.WriteLine("Ошибка - некорректный ввод чисел!");
-            }
-            else
-            {
-                Console.WriteLine("Ошибка - некорректное количество аргументов!");
-            }
-            Console.WriteLine("Попробуйте \'usage sub\'");
+            var result = args.Aggregate((current, next) => current + next.Negate());
+            Console.WriteLine("Результат вычитания: {0}", result);
         }
     }
 }

@@ -261,7 +261,7 @@ namespace FractionalOperationsLab
             return rational.Base;
         }
 
-        public static explicit operator Rational(int integer)
+        public static implicit operator Rational(int integer)
         {
             return new Rational {Denominator = 1, Numerator = integer};
         }

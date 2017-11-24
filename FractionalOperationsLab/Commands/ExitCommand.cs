@@ -4,7 +4,7 @@ namespace FractionalOperationsLab.Commands
 {
     class ExitCommand : ICommand
     {
-        private readonly Handler _handler;
+        private readonly Handler handler;
         public string Name => "exit";
         public string ShortDescription => "завершить работу с приложением";
         public string Description => "Завершает работу с текущим приложением.";
@@ -12,18 +12,17 @@ namespace FractionalOperationsLab.Commands
 
         public ExitCommand(Handler handler)
         {
-            _handler = handler;
+            this.handler = handler;
         }
 
         public void Execute(params string[] arguments)
         {
-            if (arguments.Length == 0)
+            if (arguments.Length != 0)
             {
-                _handler.Running = false;
+                Console.WriteLine("Ошибка - вызов команды должен осуществляться без аргументов!");
                 return;
             }
-            Console.WriteLine("Ошибка - вызов команды должен осуществляться без аргументов!");
-            Console.WriteLine("Попробуйте \"usage exit\"");
+            handler.Running = false;
         }
     }
 }
